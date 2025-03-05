@@ -1,5 +1,5 @@
 {
-  "name": "react-table-librairy",
+  "name": "@flowxt74/react-table-librairy",
   "version": "1.0.0",
   "description": "Une librairie React de tableau avec filtrage, tri et pagination",
   "main": "dist/index.js",
@@ -12,6 +12,17 @@
     "build": "babel src --out-dir dist --copy-files",
     "prepare": "npm run build",
     "link": "npm link"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flowxt/component_react-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/flowxt/component_react-table/issues"
+  },
+  "homepage": "https://github.com/flowxt/component_react-table#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "react": "^18.0.0",
@@ -34,7 +45,7 @@
     "filter",
     "pagination"
   ],
-  "author": "Florian Barjon",
-  "license": "ISC",
+  "author": "Florian Barjon <barjonflorian@gmail.com>",
+  "license": "MIT",
   "type": "module"
 }
