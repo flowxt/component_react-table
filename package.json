@@ -1,0 +1,40 @@
+{
+  "name": "react-table-librairy",
+  "version": "1.0.0",
+  "description": "Une librairie React de tableau avec filtrage, tri et pagination",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "babel src --out-dir dist --copy-files",
+    "prepare": "npm run build",
+    "link": "npm link"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "tailwindcss": "^4.0.9"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.9",
+    "@babel/core": "^7.22.9",
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-react": "^7.22.5"
+  },
+  "keywords": [
+    "react",
+    "table",
+    "sortable",
+    "filter",
+    "pagination"
+  ],
+  "author": "Florian Barjon",
+  "license": "ISC",
+  "type": "module"
+}
