@@ -1,6 +1,6 @@
 {
   "name": "@flowxt74/react-table-librairy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Une librairie React de tableau avec filtrage, tri et pagination",
   "main": "dist/index.js",
   "module": "dist/index.js",

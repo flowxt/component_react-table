@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-
+import { MagnifyingGlassIcon, TrashIcon, ArchiveBoxIcon } from '@heroicons/react/24/solid';
 
 /**
  * Composant Table - Un tableau de données réutilisable avec fonctionnalités avancées
@@ -10,6 +9,9 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
  * @param {boolean} [showGlobalFilter=true] - Affiche/masque la barre de recherche globale
  * @param {boolean} [enableSorting=true] - Active/désactive le tri des colonnes
  * @param {string} [ariaLabel="Tableau de données"] - Label d'accessibilité pour le tableau
+ * @param {Function} [onDelete] - Fonction appelée lors de la suppression d'une ligne
+ * @param {Function} [onArchive] - Fonction appelée lors de l'archivage d'une ligne
+ * @param {Array} [pageSizeOptions=[5, 10, 25, 50, 100]] - Options pour le nombre d'éléments par page
  *
  * @example
  * <Table 
@@ -22,14 +24,26 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
  *   showGlobalFilter={true}
  *   enableSorting={true}
  *   ariaLabel="Liste des employés"
+ *   onDelete={(row) => handleDelete(row)}
+ *   onArchive={(row) => handleArchive(row)}
  * />
  */
 
-
-const Table = ({ data, columns, pageSize = 10, showGlobalFilter = true, enableSorting = true, ariaLabel = "Tableau de données" }) => {
+const Table = ({ 
+  data, 
+  columns, 
+  pageSize = 10, 
+  showGlobalFilter = true, 
+  enableSorting = true, 
+  ariaLabel = "Tableau de données",
+  onDelete,
+  onArchive,
+  pageSizeOptions = [5, 10, 25, 50, 100]
+}) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [currentPageSize, setCurrentPageSize] = useState(pageSize);
 
   // Logique de filtrage
   const filteredData = data.filter((row) =>
@@ -54,11 +68,11 @@ const Table = ({ data, columns, pageSize = 10, showGlobalFilter = true, enableSo
     return sortableData;
   }, [filteredData, sortConfig]);
 
-  // Pagination
-  const totalPages = Math.ceil(sortedData.length / pageSize);
+  // Pagination avec taille de page dynamique
+  const totalPages = Math.ceil(sortedData.length / currentPageSize);
   const currentData = sortedData.slice(
-    currentPage * pageSize,
-    (currentPage * pageSize) + pageSize
+    currentPage * currentPageSize,
+    (currentPage * currentPageSize) + currentPageSize
   );
 
   const handleSort = (key) => {
@@ -69,6 +83,13 @@ const Table = ({ data, columns, pageSize = 10, showGlobalFilter = true, enableSo
         ? 'descending' 
         : 'ascending'
     }));
+  };
+
+  // Gestionnaire de changement de taille de page
+  const handlePageSizeChange = (e) => {
+    const newSize = Number(e.target.value);
+    setCurrentPageSize(newSize);
+    setCurrentPage(0); // Retour à la première page lors du changement
   };
 
   return (
@@ -112,6 +133,11 @@ const Table = ({ data, columns, pageSize = 10, showGlobalFilter = true, enableSo
                   </div>
                 </th>
               ))}
+              {(onDelete || onArchive) && (
+                <th className="py-3 px-4 font-medium text-gray-700">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -122,14 +148,38 @@ const Table = ({ data, columns, pageSize = 10, showGlobalFilter = true, enableSo
                     {row[column.accessor]}
                   </td>
                 ))}
+                {(onDelete || onArchive) && (
+                  <td className="py-3 px-4 text-gray-600">
+                    <div className="flex space-x-2">
+                      {onArchive && (
+                        <button
+                          onClick={() => onArchive(row)}
+                          className="p-1 text-yellow-600 hover:text-yellow-800"
+                          aria-label="Archiver"
+                        >
+                          <ArchiveBoxIcon className="w-5 h-5" />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(row)}
+                          className="p-1 text-red-600 hover:text-red-800"
+                          aria-label="Supprimer"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-wrap justify-between items-center mt-4">
+        <div className="flex items-center space-x-2 mb-2 sm:mb-0">
           <button
             onClick={() => setCurrentPage(0)}
             disabled={currentPage === 0}
@@ -159,8 +209,24 @@ const Table = ({ data, columns, pageSize = 10, showGlobalFilter = true, enableSo
             {">>"}
           </button>
         </div>
+        
+        <div className="flex items-center space-x-2 mx-2">
+          <label htmlFor="page-size" className="text-gray-700">Afficher</label>
+          <select
+            id="page-size"
+            value={currentPageSize}
+            onChange={handlePageSizeChange}
+            className="border rounded px-2 py-1"
+          >
+            {pageSizeOptions.map(size => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
+          <span className="text-gray-700">éléments par page</span>
+        </div>
+        
         <span className="text-gray-700">
-          Page <strong>{currentPage + 1}</strong> sur <strong>{totalPages}</strong>
+          Page <strong>{currentPage + 1}</strong> sur <strong>{totalPages || 1}</strong>
         </span>
       </div>
     </div>
